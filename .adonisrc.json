@@ -13,14 +13,18 @@
         "Database": "database",
         "Contracts": "contracts"
     },
-    "preloads": ["./start/routes", "./start/kernel"],
+    "preloads": [
+        "./start/routes",
+        "./start/kernel"
+    ],
     "providers": [
         "./providers/AppProvider",
         "@adonisjs/core",
         "@adonisjs/session",
         "@adonisjs/view",
         "@adonisjs/shield",
-        "@adonisjs/lucid"
+        "@adonisjs/lucid",
+        "@adonisjs/lucid-slugify"
     ],
     "metaFiles": [
         {
@@ -32,5 +36,7 @@
             "reloadServer": false
         }
     ],
-    "aceProviders": ["@adonisjs/repl"]
+    "aceProviders": [
+        "@adonisjs/repl"
+    ]
 }

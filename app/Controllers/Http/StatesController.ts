@@ -1,4 +1,3 @@
 // import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class StatesController {
-}
+export default class StatesController {}

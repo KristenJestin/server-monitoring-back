@@ -23,6 +23,8 @@ export default Env.rules({
     SESSION_DRIVER: Env.schema.string(),
     NODE_ENV: Env.schema.enum(['development', 'production', 'testing'] as const),
 
+    UI_PORT: Env.schema.number(),
+
     DB_HOST: Env.schema.string({ format: 'host' }),
     DB_PORT: Env.schema.number(),
     DB_USER: Env.schema.string(),

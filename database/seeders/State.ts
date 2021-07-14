@@ -8,7 +8,7 @@ export default class StateSeeder extends BaseSeeder {
                 name: 'New',
                 color: '#778ca3',
                 borderColor: '#4b6584',
-                textColor: '#000000',
+                textColor: '#ffffff',
             },
             {
                 name: 'In Progress',
@@ -26,7 +26,7 @@ export default class StateSeeder extends BaseSeeder {
                 name: 'Online',
                 color: '#26de81',
                 borderColor: '#20bf6b',
-                textColor: '#000000',
+                textColor: '#ffffff',
             },
             {
                 name: 'Export or Upload',

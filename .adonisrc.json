@@ -15,7 +15,11 @@
     },
     "preloads": [
         "./start/routes",
-        "./start/kernel"
+        "./start/kernel",
+        {
+            "file": "./start/inertia",
+            "environment": ["web"]
+        }
     ],
     "providers": [
         "./providers/AppProvider",
@@ -24,7 +28,9 @@
         "@adonisjs/view",
         "@adonisjs/shield",
         "@adonisjs/lucid",
-        "@adonisjs/lucid-slugify"
+        "@adonisjs/lucid-slugify",
+        "@eidellev/inertia-adonisjs",
+        "./providers/ViteAssetProvider"
     ],
     "metaFiles": [
         {
@@ -32,11 +38,9 @@
             "reloadServer": false
         },
         {
-            "pattern": "resources/views/**/*.edge",
+            "pattern": "resources/**",
             "reloadServer": false
         }
     ],
-    "aceProviders": [
-        "@adonisjs/repl"
-    ]
+    "aceProviders": ["@adonisjs/repl"]
 }

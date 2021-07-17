@@ -23,13 +23,13 @@ export default class StateSeeder extends BaseSeeder {
                 textColor: '#000000',
             },
             {
-                name: 'Online',
+                name: 'Uploaded',
                 color: '#26de81',
                 borderColor: '#20bf6b',
                 textColor: '#ffffff',
             },
             {
-                name: 'Export or Upload',
+                name: 'In Review',
                 color: '#2bcbba',
                 borderColor: '#10b9b1',
                 textColor: '#ffffff',

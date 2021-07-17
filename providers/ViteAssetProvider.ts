@@ -20,16 +20,16 @@ export type Manifest = {
  */
 export default class ViteAssetProvider {
     public static needsApplication = true
-    constructor(protected application: ApplicationContract) {}
+    constructor(protected app: ApplicationContract) {}
 
-    public async boot() {
-        this.application.container.withBindings(['Adonis/Core/View'], (view: ViewContract) => {
-            const manifestPath = this.application.publicPath('manifest.json')
+    public async register() {
+        this.app.container.withBindings(['Adonis/Core/View'], (view: ViewContract) => {
+            const manifestPath = this.app.publicPath('manifest.json')
             view.global('vite_asset', (entry: string) => {
                 if (!entry) return
 
                 // asset in dev
-                if (!this.application.inProduction) return this.assetDev(entry)
+                if (!this.app.inProduction) return this.assetDev(entry)
 
                 return this.assetProd(entry, manifestPath)
             })

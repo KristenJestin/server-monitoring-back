@@ -1,9 +1,11 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, beforeCreate } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, belongsTo, BelongsTo, beforeCreate } from '@ioc:Adonis/Lucid/Orm'
 import { slugify } from '@ioc:Adonis/Addons/LucidSlugify'
 import { v4 as uuid } from 'uuid'
 
-export default class State extends BaseModel {
+import State from 'App/Models/State'
+
+export default class Project extends BaseModel {
     @column({ isPrimary: true })
     public id: string
 
@@ -17,21 +19,21 @@ export default class State extends BaseModel {
     public name: string
 
     @column()
-    public color: string
-
-    @column()
-    public textColor: string
-
-    @column()
-    public borderColor: string
-
-    @column()
     @slugify({
         strategy: 'dbIncrement',
         fields: ['name'],
         allowUpdates: true,
     })
     public slug: string
+
+    @column()
+    public description?: string
+
+    @column()
+    public stateId: string
+
+    @belongsTo(() => State)
+    public state: BelongsTo<typeof State>
 
     @beforeCreate()
     public static async defineId(model: State) {

@@ -20,4 +20,5 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 
+Route.resource('projects', 'ProjectsController').where('id', /^[a-z0-9_-]+$/)
 Route.resource('states', 'StatesController').where('id', /^[a-z0-9_-]+$/)

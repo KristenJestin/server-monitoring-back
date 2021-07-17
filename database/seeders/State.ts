@@ -11,27 +11,27 @@ export default class StateSeeder extends BaseSeeder {
                 textColor: '#ffffff',
             },
             {
-                name: 'In Progress',
-                color: '#a65eea',
-                borderColor: '#8854d0',
-                textColor: '#ffffff',
-            },
-            {
                 name: 'Idea',
                 color: '#fed330',
                 borderColor: '#f7b731',
                 textColor: '#000000',
             },
             {
-                name: 'Uploaded',
-                color: '#26de81',
-                borderColor: '#20bf6b',
+                name: 'In Progress',
+                color: '#a65eea',
+                borderColor: '#8854d0',
                 textColor: '#ffffff',
             },
             {
                 name: 'In Review',
                 color: '#2bcbba',
                 borderColor: '#10b9b1',
+                textColor: '#ffffff',
+            },
+            {
+                name: 'Uploaded',
+                color: '#26de81',
+                borderColor: '#20bf6b',
                 textColor: '#ffffff',
             },
             {

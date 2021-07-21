@@ -18,9 +18,7 @@
         "./start/kernel",
         {
             "file": "./start/inertia",
-            "environment": [
-                "web"
-            ]
+            "environment": ["web"]
         }
     ],
     "providers": [
@@ -45,7 +43,5 @@
             "reloadServer": false
         }
     ],
-    "aceProviders": [
-        "@adonisjs/repl"
-    ]
+    "aceProviders": ["@adonisjs/repl"]
 }

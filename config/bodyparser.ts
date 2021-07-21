@@ -123,12 +123,12 @@ const bodyParserConfig: BodyParserConfig = {
     |
     | Correct
     | ```js
-    | /projects/:id/file
+    | /documents/:id/file
     | ```
     |
     | Incorrect
     | ```js
-    | projects/:id/file
+    | documents/:id/file
     | ```
     */
         processManually: [],

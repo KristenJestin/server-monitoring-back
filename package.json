@@ -37,6 +37,7 @@
         "@adonisjs/shield": "^7.0.4",
         "@adonisjs/view": "^6.0.5",
         "@eidellev/inertia-adonisjs": "^4.0.0",
+        "@vueform/multiselect": "^2.0.1",
         "luxon": "^2.0.1",
         "pg": "^8.6.0",
         "proxy-addr": "^2.0.7",

@@ -239,7 +239,7 @@
                     "name": "batch",
                     "propertyName": "batch",
                     "type": "number",
-                    "description": "Define custom batch number for rollback. Use 0 to rollback to initial state"
+                    "description": "Define custom batch number for rollback. Use 0 to rollback to initial tag"
                 }
             ]
         },

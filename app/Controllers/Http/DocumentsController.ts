@@ -1,8 +1,11 @@
+import Application from '@ioc:Adonis/Core/Application'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
+import { cuid } from '@ioc:Adonis/Core/Helpers'
 
 import Document from 'App/Models/Document'
 import Tag from 'App/Models/Tag'
+import File from 'App/Models/File'
 import CreateDocumentValidator from 'App/Validators/CreateDocumentValidator'
 
 export default class DocumentsController {
@@ -21,16 +24,38 @@ export default class DocumentsController {
         const payload = await request.validate(CreateDocumentValidator)
 
         const document = await Database.transaction(async (trx) => {
-            const tags = await Tag.fetchOrCreateMany(
-                'name',
-                payload.tags.map((tag) => ({
-                    name: tag,
-                    color: '#f97316',
-                    textColor: '#ffffff',
-                })),
+            // file
+            const uploadedFile = payload.file
+            const fileName = `${cuid()}.${uploadedFile.extname}`
+            await uploadedFile.move(Application.tmpPath('uploads'), {
+                name: fileName,
+            })
+            const file = await File.create(
+                {
+                    name: uploadedFile.clientName,
+                    ext: uploadedFile.extname,
+                    path: fileName,
+                    mimeType: uploadedFile.type,
+                    size: uploadedFile.size,
+                },
                 { client: trx }
             )
-            const document = await Document.create(payload, { client: trx })
+
+            // tags
+            let tags: Tag[] = []
+            if (payload.tags && payload.tags.length)
+                tags = await Tag.fetchOrCreateMany(
+                    'name',
+                    payload.tags.map((tag) => ({
+                        name: tag,
+                        color: '#f97316',
+                        textColor: '#ffffff',
+                    })),
+                    { client: trx }
+                )
+
+            // document with tags
+            const document = await Document.create({ ...payload, fileId: file.id }, { client: trx })
             await document.related('tags').saveMany(tags, true)
 
             return document
@@ -64,15 +89,17 @@ export default class DocumentsController {
 
         const newDocument = await Database.transaction(async (trx) => {
             const document = await Document.findByOrFail('slug', slug)
-            const tags = await Tag.fetchOrCreateMany(
-                'name',
-                payload.tags.map((tag) => ({
-                    name: tag,
-                    color: '#f97316',
-                    textColor: '#ffffff',
-                })),
-                { client: trx }
-            )
+            let tags: Tag[] = []
+            if (payload.tags && payload.tags.length)
+                tags = await Tag.fetchOrCreateMany(
+                    'name',
+                    payload.tags.map((tag) => ({
+                        name: tag,
+                        color: '#f97316',
+                        textColor: '#ffffff',
+                    })),
+                    { client: trx }
+                )
 
             document.merge(payload)
             document.useTransaction(trx)
@@ -90,5 +117,17 @@ export default class DocumentsController {
         return response.redirect().status(303).toRoute('documents.index')
     }
 
-    public async destroy({}: HttpContextContract) {}
+    public async destroy({ session, params, response }: HttpContextContract) {
+        const slug = params.id // get slug in url
+        const document = await Document.findByOrFail('slug', slug) // find element with slug
+
+        // delete data
+        await document.softDelete()
+
+        session.flash('alert', {
+            type: 'success',
+            message: `The document '${document.name}' has been deleted.`,
+        })
+        return response.redirect().status(303).toRoute('documents.index')
+    }
 }

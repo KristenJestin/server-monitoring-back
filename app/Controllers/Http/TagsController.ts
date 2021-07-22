@@ -59,7 +59,7 @@ export default class TagsController {
         const slug = params.id // get slug in url
         const tag = await Tag.findByOrFail('slug', slug) // find element with slug
 
-        // update data
+        // delete data
         await tag.delete()
 
         session.flash('alert', {

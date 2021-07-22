@@ -1,9 +1,21 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, manyToMany, ManyToMany, beforeCreate } from '@ioc:Adonis/Lucid/Orm'
+import {
+    BaseModel,
+    column,
+    manyToMany,
+    ManyToMany,
+    beforeCreate,
+    beforeFind,
+    beforeFetch,
+    belongsTo,
+    BelongsTo,
+} from '@ioc:Adonis/Lucid/Orm'
 import { slugify } from '@ioc:Adonis/Addons/LucidSlugify'
 import { v4 as uuid } from 'uuid'
+import { softDelete, softDeleteQuery } from 'App/Services/SoftDelete'
 
 import Tag from 'App/Models/Tag'
+import File from 'App/Models/File'
 
 export default class Document extends BaseModel {
     @column({ isPrimary: true })
@@ -14,6 +26,9 @@ export default class Document extends BaseModel {
 
     @column.dateTime({ autoCreate: true, autoUpdate: true })
     public updatedAt: DateTime
+
+    @column.dateTime()
+    public deletedAt?: DateTime
 
     @column()
     public name: string
@@ -34,8 +49,23 @@ export default class Document extends BaseModel {
     })
     public tags: ManyToMany<typeof Tag>
 
+    @column()
+    public fileId: string
+
+    @belongsTo(() => File)
+    public file: BelongsTo<typeof File>
+
     @beforeCreate()
     public static async defineId(model: Document) {
         model.id = uuid()
+    }
+
+    @beforeFind()
+    public static softDeletesFind = softDeleteQuery
+    @beforeFetch()
+    public static softDeletesFetch = softDeleteQuery
+
+    public async softDelete(column?: string) {
+        await softDelete(this, column)
     }
 }

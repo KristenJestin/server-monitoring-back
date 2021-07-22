@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, belongsTo, BelongsTo, beforeCreate } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, manyToMany, ManyToMany, beforeCreate } from '@ioc:Adonis/Lucid/Orm'
 import { slugify } from '@ioc:Adonis/Addons/LucidSlugify'
 import { v4 as uuid } from 'uuid'
 
@@ -29,14 +29,13 @@ export default class Document extends BaseModel {
     @column()
     public description?: string
 
-    @column()
-    public tagId: string
-
-    @belongsTo(() => Tag)
-    public tag: BelongsTo<typeof Tag>
+    @manyToMany(() => Tag, {
+        pivotTimestamps: true,
+    })
+    public tags: ManyToMany<typeof Tag>
 
     @beforeCreate()
-    public static async defineId(model: Tag) {
+    public static async defineId(model: Document) {
         model.id = uuid()
     }
 }

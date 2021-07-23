@@ -10,6 +10,7 @@ export default class CreateDocumentValidator {
             size: '50mb',
             extnames: ['jpg', 'gif', 'png', 'pdf'],
         }),
+        notes: schema.string.optional({ trim: true }, [rules.maxLength(500)]),
     })
 
     public messages = {

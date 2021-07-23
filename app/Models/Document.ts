@@ -55,6 +55,9 @@ export default class Document extends BaseModel {
     @belongsTo(() => File)
     public file: BelongsTo<typeof File>
 
+    @column()
+    public notes?: string
+
     @beforeCreate()
     public static async defineId(model: Document) {
         model.id = uuid()

@@ -7,6 +7,7 @@ import Document from 'App/Models/Document'
 import Tag from 'App/Models/Tag'
 import File from 'App/Models/File'
 import CreateDocumentValidator from 'App/Validators/CreateDocumentValidator'
+import EditDocumentValidator from 'App/Validators/EditDocumentValidator'
 
 export default class DocumentsController {
     public async index({ inertia }: HttpContextContract) {
@@ -85,7 +86,7 @@ export default class DocumentsController {
 
     public async update({ request, session, response, params }: HttpContextContract) {
         const slug = params.id
-        const payload = await request.validate(CreateDocumentValidator)
+        const payload = await request.validate(EditDocumentValidator)
 
         const newDocument = await Database.transaction(async (trx) => {
             const document = await Document.findByOrFail('slug', slug)

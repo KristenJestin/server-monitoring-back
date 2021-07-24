@@ -20,5 +20,8 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 
-Route.resource('documents', 'DocumentsController').where('id', /^[a-z0-9._-]+$/)
 Route.resource('tags', 'TagsController').where('id', /^[a-z0-9_-]+$/)
+Route.resource('documents', 'DocumentsController').where('id', /^[a-z0-9._-]+$/)
+Route.get('documents/:id/download', 'DocumentsController.download')
+    .as('documents.download')
+    .where('id', /^[a-z0-9._-]+$/)

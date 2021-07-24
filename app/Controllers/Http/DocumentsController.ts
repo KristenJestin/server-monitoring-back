@@ -131,4 +131,14 @@ export default class DocumentsController {
         })
         return response.redirect().status(303).toRoute('documents.index')
     }
+
+    public async download({ params, response }: HttpContextContract) {
+        const slug = params.id
+        const document = await Document.query().where('slug', slug).preload('file').firstOrFail()
+
+        return response.attachment(
+            Application.tmpPath('uploads', document.file.path),
+            document.file.name
+        )
+    }
 }

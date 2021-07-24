@@ -2,6 +2,7 @@ import { DateTime } from 'luxon'
 import {
     BaseModel,
     column,
+    computed,
     manyToMany,
     ManyToMany,
     beforeCreate,
@@ -57,6 +58,21 @@ export default class Document extends BaseModel {
 
     @column()
     public notes?: string
+
+    @column()
+    public receivedAt?: DateTime
+
+    @column()
+    public amount: number
+
+    @column()
+    public duration: number
+
+    @computed()
+    public get endAt() {
+        if (!this.duration || this.duration <= 0) return undefined
+        return (this.receivedAt || this.createdAt).plus({ month: this.duration })
+    }
 
     @beforeCreate()
     public static async defineId(model: Document) {

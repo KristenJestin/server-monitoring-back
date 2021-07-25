@@ -5,17 +5,15 @@ export default class Documents extends BaseSchema {
 
     public async up() {
         this.schema.table(this.tableName, (table) => {
-            table.timestamp('received_at', { useTz: true }).nullable()
-            table.integer('amount').nullable()
-            table.integer('duration').unsigned().nullable()
+            table.dropColumn('tag')
+            table.dropColumn('description')
         })
     }
 
     public async down() {
         this.schema.table(this.tableName, (table) => {
-            table.dropColumn('received_at')
-            table.dropColumn('amount')
-            table.dropColumn('duration')
+            table.string('description').nullable()
+            table.uuid('tag_id').references('id').inTable('tags')
         })
     }
 }

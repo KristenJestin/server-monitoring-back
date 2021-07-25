@@ -42,9 +42,6 @@ export default class Document extends BaseModel {
     })
     public slug: string
 
-    @column()
-    public description?: string
-
     @manyToMany(() => Tag, {
         pivotTimestamps: true,
     })
@@ -59,14 +56,14 @@ export default class Document extends BaseModel {
     @column()
     public notes?: string
 
-    @column()
+    @column.date()
     public receivedAt?: DateTime
 
     @column()
-    public amount: number
+    public amount?: number
 
     @column()
-    public duration: number
+    public duration?: number
 
     @computed()
     public get endAt() {

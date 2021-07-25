@@ -5,7 +5,7 @@ export default class Documents extends BaseSchema {
 
     public async up() {
         this.schema.table(this.tableName, (table) => {
-            table.dropColumn('tag')
+            table.dropColumn('tag_id')
             table.dropColumn('description')
         })
     }

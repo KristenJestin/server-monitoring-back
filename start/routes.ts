@@ -20,7 +20,7 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 
-Route.any('', ({ response }) => response.redirect().toRoute('documents.index'))
+Route.any('', ({ response }) => response.redirect().toRoute('documents.index')).as('home.index')
 Route.resource('tags', 'TagsController').where('id', /^[a-z0-9_-]+$/)
 Route.resource('documents', 'DocumentsController').where('id', /^[a-z0-9._-]+$/)
 Route.get('documents/:id/download', 'DocumentsController.download')

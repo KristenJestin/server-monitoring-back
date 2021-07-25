@@ -85,11 +85,13 @@ export default class DocumentsController {
     }
 
     public async update({ request, session, response, params }: HttpContextContract) {
+        response.status(303) // force status to work with inertia for redirection in succes case BUT in fail case too
+
         const slug = params.id
+        const document = await Document.findByOrFail('slug', slug)
         const payload = await request.validate(EditDocumentValidator)
 
         const newDocument = await Database.transaction(async (trx) => {
-            const document = await Document.findByOrFail('slug', slug)
             let tags: Tag[] = []
             if (payload.tags && payload.tags.length)
                 tags = await Tag.fetchOrCreateMany(
@@ -115,7 +117,7 @@ export default class DocumentsController {
             type: 'success',
             message: `Nice! The new document '${newDocument.name}' has been added.`,
         })
-        return response.redirect().status(303).toRoute('documents.index')
+        return response.redirect().toRoute('documents.index')
     }
 
     public async destroy({ session, params, response }: HttpContextContract) {

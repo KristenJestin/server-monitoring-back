@@ -1,13 +1,16 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import FolderRepository from 'App/Repositories/FolderRepository'
-import Folder from 'App/Models/Folder'
 import CreateFolderValidator from 'App/Validators/CreateFolderValidator'
+import Folder from 'App/Models/Folder'
+import Document from 'App/Models/Document'
 
 export default class FoldersController {
     public async index({ inertia }: HttpContextContract) {
-        const folders = await Folder.all()
-        return inertia.render('Folders/Index', { folders })
+        const folders = await Folder.query().whereNull('parent_id')
+        const documents = await Document.query().whereNull('folder_id')
+
+        return inertia.render('Folders/Index', { folders, documents })
     }
 
     public async create({ inertia }: HttpContextContract) {
@@ -30,7 +33,10 @@ export default class FoldersController {
         const slug = params.id
         const folder = await Folder.findByOrFail('slug', slug)
 
-        return inertia.render('Folders/Show', { folder })
+        const folders = await Folder.query().where('parent_id', folder.id)
+        const documents = await Document.query().where('folder_id', folder.id)
+
+        return inertia.render('Folders/Show', { folder, folders, documents })
     }
 
     public async edit({ params, inertia }: HttpContextContract) {

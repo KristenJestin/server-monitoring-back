@@ -8,6 +8,7 @@ export default class CreateDocumentValidator {
     //     tenantId: this.ctx.auth.user!.tenantId,
     // })
 
+    // where: { tenant_id: this.refs.tenantId },
     public schema = schema.create({
         name: schema.string({ trim: true }, [
             rules.minLength(3),

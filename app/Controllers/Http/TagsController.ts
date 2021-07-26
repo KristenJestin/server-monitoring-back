@@ -39,6 +39,8 @@ export default class TagsController {
     }
 
     public async update({ session, params, request, response }: HttpContextContract) {
+        response.status(303) // force status to work with inertia for redirection in succes case BUT in fail case too
+
         const slug = params.id // get slug in url
         const tag = await Tag.findByOrFail('slug', slug) // find element with slug
 

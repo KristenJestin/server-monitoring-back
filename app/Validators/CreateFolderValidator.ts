@@ -12,7 +12,7 @@ export default class CreateFolderValidator {
         name: schema.string({ trim: true }, [rules.minLength(3)]),
         color: schema.string.optional({ trim: true }, [rules.regex(/#(?:[0-9a-fA-F]{3}){1,2}$/)]),
         // TODO: check if is not a descendant
-        parent_id: schema.string.optional({}, [rules.exists({ table: 'folders', column: 'id' })]),
+        parentId: schema.string.optional({}, [rules.exists({ table: 'folders', column: 'id' })]),
     })
 
     public messages = {

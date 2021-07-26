@@ -8,6 +8,7 @@ import Tag from 'App/Models/Tag'
 import File from 'App/Models/File'
 import CreateDocumentValidator from 'App/Validators/CreateDocumentValidator'
 import EditDocumentValidator from 'App/Validators/EditDocumentValidator'
+import Folder from 'App/Models/Folder'
 
 export default class DocumentsController {
     public async index({ inertia }: HttpContextContract) {
@@ -18,7 +19,9 @@ export default class DocumentsController {
 
     public async create({ inertia }: HttpContextContract) {
         const tags = await Tag.all()
-        return inertia.render('Documents/Create', { tags })
+        const folders = await Folder.all()
+
+        return inertia.render('Documents/Create', { tags, folders })
     }
 
     public async store({ request, session, response }: HttpContextContract) {
@@ -78,10 +81,15 @@ export default class DocumentsController {
 
     public async edit({ params, inertia }: HttpContextContract) {
         const slug = params.id
-        const document = await Document.query().where('slug', slug).preload('tags').firstOrFail()
+        const document = await Document.query()
+            .where('slug', slug)
+            .preload('tags')
+            .preload('folder')
+            .firstOrFail()
         const tags = await Tag.all()
+        const folders = await Folder.all()
 
-        return inertia.render('Documents/Edit', { document, tags })
+        return inertia.render('Documents/Edit', { document, tags, folders })
     }
 
     public async update({ request, session, response, params }: HttpContextContract) {
@@ -104,7 +112,14 @@ export default class DocumentsController {
                     { client: trx }
                 )
 
-            document.merge(payload)
+            document.merge({
+                folderId: null,
+                notes: null,
+                receivedAt: null,
+                amount: null,
+                duration: null,
+                ...payload,
+            })
             document.useTransaction(trx)
             await document.save()
 

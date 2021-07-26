@@ -50,8 +50,7 @@ export default class FoldersController {
         const payload = await request.validate(CreateFolderValidator) // validate sended data
 
         // update data
-        console.log({ color: null, parent_id: null, ...payload })
-        folder.merge({ color: null, parent_id: null, ...payload })
+        folder.merge({ color: null, parentId: null, ...payload })
         await folder.save()
 
         session.flash('alert', {

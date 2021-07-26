@@ -28,6 +28,7 @@ export default class CreateDocumentValidator {
         ),
         amount: schema.number.optional(),
         duration: schema.number.optional([rules.unsigned()]),
+        folderId: schema.string.optional({}, [rules.exists({ table: 'folders', column: 'id' })]),
     })
 
     public messages = {

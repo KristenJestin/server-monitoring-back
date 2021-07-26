@@ -17,6 +17,7 @@ import { softDelete, softDeleteQuery } from 'App/Services/SoftDelete'
 
 import Tag from 'App/Models/Tag'
 import File from 'App/Models/File'
+import Folder from 'App/Models/Folder'
 
 export default class Document extends BaseModel {
     @column({ isPrimary: true })
@@ -64,6 +65,12 @@ export default class Document extends BaseModel {
 
     @column()
     public duration?: number
+
+    @column()
+    public folderId?: string
+
+    @belongsTo(() => Folder)
+    public folder: BelongsTo<typeof Folder>
 
     @computed()
     public get endAt() {

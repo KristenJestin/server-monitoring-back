@@ -11,10 +11,36 @@ import EditDocumentValidator from 'App/Validators/EditDocumentValidator'
 import Folder from 'App/Models/Folder'
 
 export default class DocumentsController {
-    public async index({ inertia }: HttpContextContract) {
-        const documents = await Document.all()
+    public async index({ inertia, request }: HttpContextContract) {
+        const { search, tags } = request.qs()
 
-        return inertia.render('Documents/Index', { documents })
+        // filters
+        let query = Document.query().select('documents.*')
+        if (search)
+            query = query.where((q) => {
+                q.where('documents.name', 'LIKE', `%${search}%`).orWhere(
+                    'documents. notes',
+                    'LIKE',
+                    `%${search}%`
+                )
+            })
+        if (tags && tags.length) {
+            query = query
+                .innerJoin('document_tag', 'documents.id', '=', 'document_tag.document_id')
+                .innerJoin('tags', 'document_tag.tag_id', '=', 'tags.id')
+            for (const tag of tags) {
+                query = query.andWhere('tags.slug', tag)
+            }
+        }
+
+        // data
+        const documents = await query
+
+        return inertia.render('Documents/Index', {
+            documents,
+            filters: { search, tags },
+            tags: await Tag.all(),
+        })
     }
 
     public async create({ inertia }: HttpContextContract) {

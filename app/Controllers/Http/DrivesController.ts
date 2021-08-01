@@ -1,12 +1,18 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { getDiskInfo } from 'node-disk-info'
 
 import Drive from 'App/Models/Drive'
 import CreateDriveValidator from 'App/Validators/CreateDriveValidator'
 
 export default class DrivesController {
     public async index({ inertia }: HttpContextContract) {
+        const isWin = process.platform === 'win32'
+
         const drives = await Drive.all()
-        return inertia.render('Drives/Index', { drives })
+        const disksInfo = await getDiskInfo()
+        const disks = isWin ? disksInfo : disksInfo.filter((d) => d.filesystem.startsWith('/dev/'))
+
+        return inertia.render('Drives/Index', { drives, disks })
     }
 
     public async create({ inertia }: HttpContextContract) {

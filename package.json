@@ -39,6 +39,7 @@
         "@eidellev/inertia-adonisjs": "^4.0.0",
         "@vueform/multiselect": "^2.0.1",
         "luxon": "^2.0.1",
+        "node-disk-info": "^1.3.0",
         "pg": "^8.6.0",
         "proxy-addr": "^2.0.7",
         "reflect-metadata": "^0.1.13",

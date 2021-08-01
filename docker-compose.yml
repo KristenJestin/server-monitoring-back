@@ -20,7 +20,7 @@ services:
 
     pgadmin_ci:
         container_name: pgadmin_ci_container
-        image: dpage/pgadmin4:5.1
+        image: dpage/pgadmin4:5
         env_file:
             - .env
         environment:

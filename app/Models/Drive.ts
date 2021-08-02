@@ -25,6 +25,9 @@ export default class Drive extends BaseModel {
     public slug: string
 
     @column()
+    public filesystem: string
+
+    @column()
     public size: number
 
     @beforeCreate()

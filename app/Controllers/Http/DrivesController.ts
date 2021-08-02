@@ -3,6 +3,7 @@ import { getDiskInfo } from 'node-disk-info'
 
 import Drive from 'App/Models/Drive'
 import CreateDriveValidator from 'App/Validators/CreateDriveValidator'
+import { getFilesystems } from 'App/Services/Filesystem'
 
 export default class DrivesController {
     public async index({ inertia }: HttpContextContract) {
@@ -16,7 +17,8 @@ export default class DrivesController {
     }
 
     public async create({ inertia }: HttpContextContract) {
-        return inertia.render('Drives/Create')
+        const filesystems = await getFilesystems()
+        return inertia.render('Drives/Create', { filesystems })
     }
 
     public async store({ request, session, response }: HttpContextContract) {

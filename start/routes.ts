@@ -20,4 +20,6 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 
+Route.any('', 'HomeController.index').as('home')
+
 Route.resource('drives', 'DrivesController').where('id', /^[a-z0-9_-]+$/)

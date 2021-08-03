@@ -14,5 +14,8 @@ export default class CreateDriveValidator {
         mounted: schema.enum(this.refs.mounteds),
     })
 
-    public messages = {}
+    public messages = {
+        required: '{{ field }} is required.',
+        exists: 'This {{ field }} no longer exists.',
+    }
 }

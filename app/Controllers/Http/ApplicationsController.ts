@@ -1,0 +1,84 @@
+import Application from '@ioc:Adonis/Core/Application'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { cuid } from '@ioc:Adonis/Core/Helpers'
+
+import ApplicationModel from 'App/Models/Application'
+import CreateApplicationValidator from 'App/Validators/CreateApplicationValidator'
+
+const IMAGE_FILE_PATHS = ['uploads', 'applications', 'images']
+
+export default class ApplicationsController {
+    public async index({ inertia }: HttpContextContract) {
+        const applications = await ApplicationModel.all()
+        return inertia.render('Applications/Index', { applications })
+    }
+
+    public async create({ inertia }: HttpContextContract) {
+        return inertia.render('Applications/Create')
+    }
+
+    public async store({ request, session, response }: HttpContextContract) {
+        const { imageFile: uploadedFile, ...payload } = await request.validate(
+            CreateApplicationValidator
+        )
+
+        const fileName = `${cuid()}.${uploadedFile.extname}`
+        await uploadedFile.move(Application.tmpPath(...IMAGE_FILE_PATHS), {
+            name: fileName,
+        })
+
+        const application = await ApplicationModel.create({ ...payload, image: fileName })
+        session.flash('alert', {
+            type: 'success',
+            message: `Nice! The new application '${application.name}' has been added.`,
+        })
+        return response.redirect().toRoute('applications.index')
+    }
+
+    public async show({ params, inertia }: HttpContextContract) {
+        const slug = params.id
+        const application = await ApplicationModel.findByOrFail('slug', slug)
+
+        return inertia.render('Applications/Show', { application })
+    }
+
+    public async edit({ params, inertia }: HttpContextContract) {
+        const slug = params.id
+        const application = await ApplicationModel.findByOrFail('slug', slug)
+
+        return inertia.render('Applications/Edit', { application })
+    }
+
+    public async update({ session, params, request, response }: HttpContextContract) {
+        response.status(303) // force status to work with inertia for redirection in succes case BUT in fail case too
+
+        const slug = params.id // get slug in url
+        const application = await ApplicationModel.findByOrFail('slug', slug) // find element with slug
+
+        const payload = await request.validate(CreateApplicationValidator) // validate sended data
+
+        // update data
+        application.merge(payload)
+        await application.save()
+
+        session.flash('alert', {
+            type: 'success',
+            message: `The application '${application.name}' has been updated.`,
+        })
+        return response.redirect().status(303).toRoute('applications.index')
+    }
+
+    public async destroy({ session, params, response }: HttpContextContract) {
+        const slug = params.id // get slug in url
+        const application = await ApplicationModel.findByOrFail('slug', slug) // find element with slug
+
+        // delete data
+        await application.delete()
+
+        session.flash('alert', {
+            type: 'success',
+            message: `The application '${application.name}' has been deleted.`,
+        })
+        return response.redirect().status(303).toRoute('applications.index')
+    }
+}

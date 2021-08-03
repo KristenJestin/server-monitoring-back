@@ -1,24 +1,20 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { getDiskInfo } from 'node-disk-info'
 
 import Drive from 'App/Models/Drive'
 import CreateDriveValidator from 'App/Validators/CreateDriveValidator'
-import { getFilesystems } from 'App/Services/Filesystem'
+import { getDrivesInfo, getMounteds, getDriveInfoOrFail } from 'App/Services/Filesystem'
 
 export default class DrivesController {
     public async index({ inertia }: HttpContextContract) {
-        const isWin = process.platform === 'win32'
+        const drivesData = await Drive.all()
+        const drives = await getDrivesInfo(drivesData)
 
-        const drives = await Drive.all()
-        const disksInfo = await getDiskInfo()
-        const disks = isWin ? disksInfo : disksInfo.filter((d) => d.filesystem.startsWith('/dev/'))
-
-        return inertia.render('Drives/Index', { drives, disks })
+        return inertia.render('Drives/Index', { drives })
     }
 
     public async create({ inertia }: HttpContextContract) {
-        const filesystems = await getFilesystems()
-        return inertia.render('Drives/Create', { filesystems })
+        const mounteds = await getMounteds()
+        return inertia.render('Drives/Create', { mounteds })
     }
 
     public async store({ request, session, response }: HttpContextContract) {
@@ -34,7 +30,8 @@ export default class DrivesController {
 
     public async show({ params, inertia }: HttpContextContract) {
         const slug = params.id
-        const drive = await Drive.findByOrFail('slug', slug)
+        const driveData = await Drive.findByOrFail('slug', slug)
+        const drive = await getDriveInfoOrFail(driveData)
 
         return inertia.render('Drives/Show', { drive })
     }
@@ -42,8 +39,9 @@ export default class DrivesController {
     public async edit({ params, inertia }: HttpContextContract) {
         const slug = params.id
         const drive = await Drive.findByOrFail('slug', slug)
+        const mounteds = await getMounteds()
 
-        return inertia.render('Drives/Edit', { drive })
+        return inertia.render('Drives/Edit', { drive, mounteds })
     }
 
     public async update({ session, params, request, response }: HttpContextContract) {

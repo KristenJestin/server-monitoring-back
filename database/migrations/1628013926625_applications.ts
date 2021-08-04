@@ -14,7 +14,7 @@ export default class Applications extends BaseSchema {
             table.string('url').nullable()
             table.string('image').notNullable()
             table.string('website').nullable()
-            table.string('description').nullable()
+            table.string('description', 2000).nullable()
 
             /**
              * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

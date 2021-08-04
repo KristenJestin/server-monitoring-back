@@ -1,11 +1,12 @@
 import Application from '@ioc:Adonis/Core/Application'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { cuid } from '@ioc:Adonis/Core/Helpers'
 
 import ApplicationModel from 'App/Models/Application'
 import CreateApplicationValidator from 'App/Validators/CreateApplicationValidator'
+import EditApplicationValidator from 'App/Validators/EditApplicationValidator'
+import { resizeImage } from '../../Services/ApplicationFile'
 
-const IMAGE_FILE_PATHS = ['uploads', 'applications', 'images']
+export const IMAGE_FILE_PATHS = ['uploads', 'applications']
 
 export default class ApplicationsController {
     public async index({ inertia }: HttpContextContract) {
@@ -21,13 +22,12 @@ export default class ApplicationsController {
         const { imageFile: uploadedFile, ...payload } = await request.validate(
             CreateApplicationValidator
         )
+        const fileName = await resizeImage(IMAGE_FILE_PATHS, uploadedFile)
 
-        const fileName = `${cuid()}.${uploadedFile.extname}`
-        await uploadedFile.move(Application.tmpPath(...IMAGE_FILE_PATHS), {
-            name: fileName,
+        const application = await ApplicationModel.create({
+            ...payload,
+            image: fileName,
         })
-
-        const application = await ApplicationModel.create({ ...payload, image: fileName })
         session.flash('alert', {
             type: 'success',
             message: `Nice! The new application '${application.name}' has been added.`,
@@ -40,6 +40,35 @@ export default class ApplicationsController {
         const application = await ApplicationModel.findByOrFail('slug', slug)
 
         return inertia.render('Applications/Show', { application })
+    }
+
+    public async image({ params, response }: HttpContextContract) {
+        const slug = params.id
+        const type = params.type
+
+        const application = await ApplicationModel.findByOrFail('slug', slug)
+        const ext = 'jpg'
+        let name: string
+
+        switch (type) {
+            case 'sm':
+                name = '.sm.' + ext
+                break
+            case 'md':
+                name = '.md.' + ext
+                break
+            case 'original':
+                name = '.' + ext
+                break
+            default:
+                name = '.md.' + ext
+                break
+        }
+
+        return response.attachment(
+            Application.tmpPath(...IMAGE_FILE_PATHS, application.image + name),
+            application.slug + ext
+        )
     }
 
     public async edit({ params, inertia }: HttpContextContract) {
@@ -55,10 +84,16 @@ export default class ApplicationsController {
         const slug = params.id // get slug in url
         const application = await ApplicationModel.findByOrFail('slug', slug) // find element with slug
 
-        const payload = await request.validate(CreateApplicationValidator) // validate sended data
+        const { imageFile: uploadedFile, ...payload } = await request.validate(
+            EditApplicationValidator
+        ) // validate sended data
+        const fileName = await resizeImage(IMAGE_FILE_PATHS, uploadedFile)
 
         // update data
-        application.merge(payload)
+        application.merge({
+            ...payload,
+            image: fileName,
+        })
         await application.save()
 
         session.flash('alert', {

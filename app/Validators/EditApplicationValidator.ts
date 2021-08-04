@@ -1,8 +1,12 @@
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class CreateApplicationValidator {
+export default class EditApplicationValidator {
     constructor(protected ctx: HttpContextContract) {}
+
+    public refs = schema.refs({
+        slug: this.ctx.params.id,
+    })
 
     public schema = schema.create({
         name: schema.string({ trim: true }, [rules.minLength(1)]),
@@ -11,10 +15,11 @@ export default class CreateApplicationValidator {
             rules.unique({
                 column: 'port',
                 table: 'applications',
+                whereNot: { slug: this.refs.slug },
             }),
             rules.range(1023, 65535),
         ]),
-        imageFile: schema.file({
+        imageFile: schema.file.optional({
             size: '20mb',
             extnames: ['jpg', 'gif', 'png'],
         }),

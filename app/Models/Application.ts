@@ -25,7 +25,7 @@ export default class Application extends BaseModel {
     public slug: string
 
     @column()
-    public servive?: string
+    public service?: string
 
     @column()
     public port: number

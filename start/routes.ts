@@ -19,8 +19,14 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
+Route.where('id', /^[a-z0-9_-]+$/)
 
+// routes
 Route.any('', 'HomeController.index').as('home')
 
-Route.resource('drives', 'DrivesController').where('id', /^[a-z0-9_-]+$/)
-Route.resource('applications', 'ApplicationsController').where('id', /^[a-z0-9_-]+$/)
+Route.resource('drives', 'DrivesController')
+
+Route.resource('applications', 'ApplicationsController')
+Route.get('applications/:id/image/:type', 'ApplicationsController.image')
+    .where('type', /^[a-z]+$/)
+    .as('applications.image')

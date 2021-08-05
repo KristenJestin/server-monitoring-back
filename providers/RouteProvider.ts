@@ -18,24 +18,24 @@ export default class RouteProvider {
     private getRoutes(router: any) {
         const routes = router.toJSON()
         return routes['root'].map((route) => {
-            let handler = 'Closure'
+            // let handler = 'Closure'
             if (route.meta.resolvedHandler)
-                if (route.meta.resolvedHandler.type !== 'function' && route.meta.namespace) {
-                    handler = `${route.meta.resolvedHandler['namespace']}.${route.meta.resolvedHandler['method']}`
-                } else if (route.meta.resolvedHandler.type !== 'function') {
-                    const method = route.meta.resolvedHandler['method']
-                    const routeHandler = route.handler
-                    handler = `${(routeHandler as string).replace(
-                        new RegExp(`.${method}$`),
-                        ''
-                    )}.${method}`
-                }
+                // if (route.meta.resolvedHandler.type !== 'function' && route.meta.namespace) {
+                //     handler = `${route.meta.resolvedHandler['namespace']}.${route.meta.resolvedHandler['method']}`
+                // } else if (route.meta.resolvedHandler.type !== 'function') {
+                //     const method = route.meta.resolvedHandler['method']
+                //     const routeHandler = route.handler
+                //     handler = `${(routeHandler as string).replace(
+                //         new RegExp(`.${method}$`),
+                //         ''
+                //     )}.${method}`
+                // }
 
-            return {
-                methods: route.methods,
-                name: route.name || '',
-                pattern: route.pattern,
-            }
+                return {
+                    methods: route.methods,
+                    name: route.name || '',
+                    pattern: route.pattern,
+                }
         })
     }
 }

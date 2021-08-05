@@ -1,10 +1,12 @@
 import Application from '@ioc:Adonis/Core/Application'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { exec } from 'shelljs'
 
 import ApplicationModel from 'App/Models/Application'
 import CreateApplicationValidator from 'App/Validators/CreateApplicationValidator'
 import EditApplicationValidator from 'App/Validators/EditApplicationValidator'
 import { resizeImage } from '../../Services/ApplicationFile'
+import Service from '../../Models/extra/Service'
 
 export const IMAGE_FILE_PATHS = ['uploads', 'applications']
 
@@ -40,35 +42,6 @@ export default class ApplicationsController {
         const application = await ApplicationModel.findByOrFail('slug', slug)
 
         return inertia.render('Applications/Show', { application })
-    }
-
-    public async image({ params, response }: HttpContextContract) {
-        const slug = params.id
-        const type = params.type
-
-        const application = await ApplicationModel.findByOrFail('slug', slug)
-        const ext = 'jpg'
-        let name: string
-
-        switch (type) {
-            case 'sm':
-                name = '.sm.' + ext
-                break
-            case 'md':
-                name = '.md.' + ext
-                break
-            case 'original':
-                name = '.' + ext
-                break
-            default:
-                name = '.md.' + ext
-                break
-        }
-
-        return response.attachment(
-            Application.tmpPath(...IMAGE_FILE_PATHS, application.image + name),
-            application.slug + ext
-        )
     }
 
     public async edit({ params, inertia }: HttpContextContract) {
@@ -116,4 +89,55 @@ export default class ApplicationsController {
         })
         return response.redirect().status(303).toRoute('applications.index')
     }
+
+    //#region extra
+    public async image({ params, response }: HttpContextContract) {
+        const slug = params.id
+        const type = params.type
+
+        const application = await ApplicationModel.findByOrFail('slug', slug)
+        const ext = 'jpg'
+        let name: string
+
+        switch (type) {
+            case 'sm':
+                name = '.sm.' + ext
+                break
+            case 'md':
+                name = '.md.' + ext
+                break
+            case 'original':
+                name = '.' + ext
+                break
+            default:
+                name = '.md.' + ext
+                break
+        }
+
+        return response.attachment(
+            Application.tmpPath(...IMAGE_FILE_PATHS, application.image + name),
+            application.slug + ext
+        )
+    }
+
+    public async status({ params, response }: HttpContextContract) {
+        // data
+        // const isWin = process.platform === 'win32'
+
+        // request
+        const slug = params.id
+        const application = await ApplicationModel.findByOrFail('slug', slug)
+
+        if (!application.service) return undefined
+
+        const service = new Service()
+        service.service = application.service
+        service.active = exec(`systemctl is-active ${application.service}`, {
+            silent: true,
+        }).stdout?.startsWith('active')
+
+        // result
+        return response.json(service)
+    }
+    //#endregion
 }

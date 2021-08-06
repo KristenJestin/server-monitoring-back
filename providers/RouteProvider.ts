@@ -19,7 +19,7 @@ export default class RouteProvider {
         const routes = router.toJSON()
         return routes['root'].map((route) => {
             // let handler = 'Closure'
-            if (route.meta.resolvedHandler)
+            if (route.meta.resolvedHandler && !route.pattern.startsWith('/api'))
                 // if (route.meta.resolvedHandler.type !== 'function' && route.meta.namespace) {
                 //     handler = `${route.meta.resolvedHandler['namespace']}.${route.meta.resolvedHandler['method']}`
                 // } else if (route.meta.resolvedHandler.type !== 'function') {

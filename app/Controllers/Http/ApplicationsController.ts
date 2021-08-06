@@ -5,8 +5,8 @@ import { exec } from 'shelljs'
 import ApplicationModel from 'App/Models/Application'
 import CreateApplicationValidator from 'App/Validators/CreateApplicationValidator'
 import EditApplicationValidator from 'App/Validators/EditApplicationValidator'
-import { resizeImage } from '../../Services/ApplicationFile'
-import Service from '../../Models/extra/Service'
+import { resizeImage } from 'App/Services/ApplicationFile'
+import Service from 'App/Models/extra/Service'
 
 export const IMAGE_FILE_PATHS = ['uploads', 'applications']
 

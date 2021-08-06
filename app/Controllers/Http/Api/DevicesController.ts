@@ -19,7 +19,6 @@ export default class DevicesController {
         await DeviceStatus.create({ ...payload, status })
 
         // return
-        console.log('status added ' + status)
         return response.status(201)
     }
 
@@ -36,7 +35,6 @@ export default class DevicesController {
         await DeviceAlive.create(payload)
 
         // return
-        console.log('device alive ' + payload.device)
         return response.status(201)
     }
 }

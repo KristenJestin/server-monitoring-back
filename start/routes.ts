@@ -19,26 +19,36 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
-import { STATUS } from 'App/Models/DeviceStatus'
+import { STATUS } from 'App/Models/Device'
 
 Route.where('id', /^[a-z0-9_-]+$/)
 
-// routes
+//#region routes
+// home
 Route.any('', 'HomeController.index').as('home')
 
+// drives
 Route.resource('drives', 'DrivesController')
 
+// applications
 Route.resource('applications', 'ApplicationsController')
 Route.get('applications/:id/image/:type', 'ApplicationsController.image')
     .where('type', /^[a-z]+$/)
     .as('applications.image')
 Route.get('applications/:id/status', 'ApplicationsController.status').as('applications.status')
 
-// api
+// device models
+Route.resource('devices/models', 'DeviceModelsController').except(['show'])
+
+// devices
+Route.resource('devices', 'DevicesController')
+//#endregion
+
+//#region api
 Route.group(() =>
     Route.group(() => {
-        Route.post('alive', 'DevicesController.alive')
-        Route.post('status/:status', 'DevicesController.status').where(
+        Route.post('alive', 'DevicesApiController.alive')
+        Route.post('status/:status', 'DevicesApiController.status').where(
             'status',
             new RegExp(`^(${Object.values(STATUS).join('|')})$`)
         )
@@ -46,3 +56,4 @@ Route.group(() =>
 )
     .prefix('api')
     .namespace('App/Controllers/Http/Api')
+//#endregion

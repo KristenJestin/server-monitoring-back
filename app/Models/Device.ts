@@ -34,7 +34,7 @@ export default class Device extends BaseModel {
     }
 
     @column()
-    public device: StringConstructor
+    public device: string
 
     @column()
     public name: string
@@ -48,12 +48,12 @@ export default class Device extends BaseModel {
     public slug: string
 
     @column()
-    public displayName?: string
+    public displayName?: string | null
 
     @column()
-    public modelId?: number
+    public modelId?: string | null
 
-    @belongsTo(() => DeviceModel)
+    @belongsTo(() => DeviceModel, { foreignKey: 'modelId' })
     public model: BelongsTo<typeof DeviceModel>
 
     @column()
@@ -69,7 +69,7 @@ export default class Device extends BaseModel {
     public status: STATUS
 
     @column.dateTime()
-    public connectionUpdatedAt: DateTime
+    public connectionUpdatedAt?: DateTime
 
     @column.dateTime()
     public deactivatedAt?: DateTime

@@ -16,6 +16,13 @@ export default class DevicesController {
 
     public async store({}: HttpContextContract) {}
 
+    public async show({ params, inertia }: HttpContextContract) {
+        const slug = params.id
+        const device = await Device.findByOrFail('slug', slug)
+
+        return inertia.render('Devices/Show', { device })
+    }
+
     public async edit({ params, inertia }: HttpContextContract) {
         const slug = params.id
         const device = await Device.findByOrFail('slug', slug)
@@ -43,5 +50,17 @@ export default class DevicesController {
         return response.redirect().status(303).toRoute('devices.index')
     }
 
-    public async destroy({}: HttpContextContract) {}
+    public async destroy({ session, params, response }: HttpContextContract) {
+        const slug = params.id // get slug in url
+        const device = await Device.findByOrFail('slug', slug) // find element with slug
+
+        // delete data
+        await device.delete()
+
+        session.flash('alert', {
+            type: 'success',
+            message: `The device '${device.name}' has been deleted.`,
+        })
+        return response.redirect().status(303).toRoute('devices.index')
+    }
 }

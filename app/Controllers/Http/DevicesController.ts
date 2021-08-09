@@ -13,10 +13,6 @@ export default class DevicesController {
         return inertia.render('Devices/Index', { devices })
     }
 
-    public async create({ inertia }: HttpContextContract) {
-        return inertia.render('Devices/Create')
-    }
-
     public async store({}: HttpContextContract) {}
 
     public async show({ params, inertia }: HttpContextContract) {

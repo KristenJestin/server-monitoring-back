@@ -39,11 +39,11 @@ Route.get('applications/:id/status', 'ApplicationsController.status').as('applic
 
 // device models
 Route.resource('devices/models', 'DeviceModelsController').except(['show'])
-Route.get('devices/:id/uptime', 'DevicesController.uptime').as('devices.uptime')
-Route.patch('devices/:id/deactivate', 'DevicesController.deactivate').as('devices.deactivate')
 
 // devices
-Route.resource('devices', 'DevicesController')
+Route.resource('devices', 'DevicesController').except(['create'])
+Route.get('devices/:id/uptime', 'DevicesController.uptime').as('devices.uptime')
+Route.patch('devices/:id/deactivate', 'DevicesController.deactivate').as('devices.deactivate')
 //#endregion
 
 //#region api

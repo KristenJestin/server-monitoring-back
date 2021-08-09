@@ -44,6 +44,7 @@ Route.resource('devices/models', 'DeviceModelsController').except(['show'])
 Route.resource('devices', 'DevicesController').except(['create', 'store'])
 Route.get('devices/:id/uptime', 'DevicesController.uptime').as('devices.uptime')
 Route.patch('devices/:id/deactivate', 'DevicesController.deactivate').as('devices.deactivate')
+Route.get('devices/:id/drives', 'DevicesController.drives').as('devices.drives')
 //#endregion
 
 //#region api
@@ -54,6 +55,7 @@ Route.group(() =>
             'status',
             new RegExp(`^(${Object.values(STATUS).join('|')})$`)
         )
+        Route.post('drives', 'DevicesApiController.drives')
     }).prefix('devices')
 )
     .prefix('api')

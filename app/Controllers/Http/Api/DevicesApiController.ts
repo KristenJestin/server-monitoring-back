@@ -5,6 +5,7 @@ import { DateTime } from 'luxon'
 
 import Device from 'App/Models/Device'
 import DeviceAlive from 'App/Models/DeviceAlive'
+import DeviceDrive from 'App/Models/DeviceDrive'
 
 export default class DevicesApiController {
     public async status({ params, request, response }: HttpContextContract) {
@@ -39,10 +40,44 @@ export default class DevicesApiController {
         })
         const payload = await request.validate({ schema: newAliveSchema })
 
-        // TODO: check if mac address exists in device table
+        // check if exist in database
+        if (!Env.get('APP_AUTO_CREATE_DEVICE')) {
+            await Device.findByOrFail('device', payload.device)
+        }
 
         // database
         await DeviceAlive.create(payload)
+
+        // return
+        return response.status(201)
+    }
+
+    public async drives({ request, response }: HttpContextContract) {
+        // definition
+        const newDrivesSchema = schema.create({
+            device: schema.string({ trim: true }, [rules.minLength(10)]),
+            drives: schema.array().members(
+                schema.object().members({
+                    name: schema.string({ trim: true }, [rules.minLength(1)]),
+                    isReady: schema.boolean(),
+                    driveFormat: schema.string({ trim: true }, [rules.minLength(1)]),
+                    driveType: schema.string({ trim: true }, [rules.minLength(1)]),
+                    volumeLabel: schema.string.optional({ trim: true }),
+                    availableFreeSpace: schema.number([rules.unsigned()]),
+                    totalFreeSpace: schema.number([rules.unsigned()]),
+                    totalSize: schema.number([rules.unsigned()]),
+                })
+            ),
+        })
+        const payload = await request.validate({ schema: newDrivesSchema })
+
+        // check if exist in database
+        if (!Env.get('APP_AUTO_CREATE_DEVICE')) {
+            await Device.findByOrFail('device', payload.device)
+        }
+
+        // database
+        await DeviceDrive.createMany(payload.drives.map((d) => ({ ...d, device: payload.device })))
 
         // return
         return response.status(201)

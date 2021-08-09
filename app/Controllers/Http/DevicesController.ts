@@ -4,6 +4,7 @@ import { schema } from '@ioc:Adonis/Core/Validator'
 import { DateTime } from 'luxon'
 
 import Device from 'App/Models/Device'
+import DeviceDrive from 'App/Models/DeviceDrive'
 import DeviceModel from 'App/Models/DeviceModel'
 import EditDeviceValidator from 'App/Validators/EditDeviceValidator'
 
@@ -113,7 +114,6 @@ export default class DevicesController {
 
         return response.json(result.rows)
     }
-
     public async deactivate({ session, params, response }: HttpContextContract) {
         response.status(303) // force status to work with inertia for redirection in succes case BUT in fail case too
 
@@ -129,6 +129,17 @@ export default class DevicesController {
             message: `The device '${device.name}' has been deactivated.`,
         })
         return response.redirect().toRoute('devices.index')
+    }
+
+    public async drives({ params, inertia }: HttpContextContract) {
+        const slug = params.id
+
+        const device = await Device.findByOrFail('slug', slug)
+        const drives = await DeviceDrive.query()
+            .where('device', device.device)
+            .orderBy('created_at')
+
+        return inertia.render('Devices/Drives', { device, drives })
     }
     //#endregion
 }

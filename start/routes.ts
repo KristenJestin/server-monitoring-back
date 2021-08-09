@@ -41,7 +41,7 @@ Route.get('applications/:id/status', 'ApplicationsController.status').as('applic
 Route.resource('devices/models', 'DeviceModelsController').except(['show'])
 
 // devices
-Route.resource('devices', 'DevicesController').except(['create'])
+Route.resource('devices', 'DevicesController').except(['create', 'store'])
 Route.get('devices/:id/uptime', 'DevicesController.uptime').as('devices.uptime')
 Route.patch('devices/:id/deactivate', 'DevicesController.deactivate').as('devices.deactivate')
 //#endregion

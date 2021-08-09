@@ -13,8 +13,6 @@ export default class DevicesController {
         return inertia.render('Devices/Index', { devices })
     }
 
-    public async store({}: HttpContextContract) {}
-
     public async show({ params, inertia }: HttpContextContract) {
         const slug = params.id
         const device = await Device.findByOrFail('slug', slug)

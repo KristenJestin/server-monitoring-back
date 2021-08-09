@@ -72,5 +72,5 @@ export default class Device extends BaseModel {
     public connectionUpdatedAt?: DateTime
 
     @column.dateTime()
-    public deactivatedAt?: DateTime
+    public deactivatedAt?: DateTime | null
 }

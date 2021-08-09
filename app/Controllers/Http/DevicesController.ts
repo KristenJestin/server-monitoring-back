@@ -119,5 +119,22 @@ export default class DevicesController {
 
         return response.json(result.rows)
     }
+
+    public async deactivate({ session, params, response }: HttpContextContract) {
+        response.status(303) // force status to work with inertia for redirection in succes case BUT in fail case too
+
+        const slug = params.id // get slug in url
+        const device = await Device.findByOrFail('slug', slug) // find element with slug
+
+        // delete data
+        device.merge({ deactivatedAt: !device.deactivatedAt ? DateTime.now() : null })
+        await device.save()
+
+        session.flash('alert', {
+            type: 'success',
+            message: `The device '${device.name}' has been deactivated.`,
+        })
+        return response.redirect().toRoute('devices.index')
+    }
     //#endregion
 }

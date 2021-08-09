@@ -1,4 +1,7 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import Database from '@ioc:Adonis/Lucid/Database'
+import { schema } from '@ioc:Adonis/Core/Validator'
+import { DateTime } from 'luxon'
 
 import Device from 'App/Models/Device'
 import DeviceModel from 'App/Models/DeviceModel'
@@ -51,6 +54,8 @@ export default class DevicesController {
     }
 
     public async destroy({ session, params, response }: HttpContextContract) {
+        response.status(303) // force status to work with inertia for redirection in succes case BUT in fail case too
+
         const slug = params.id // get slug in url
         const device = await Device.findByOrFail('slug', slug) // find element with slug
 
@@ -61,6 +66,58 @@ export default class DevicesController {
             type: 'success',
             message: `The device '${device.name}' has been deleted.`,
         })
-        return response.redirect().status(303).toRoute('devices.index')
+        return response.redirect().toRoute('devices.index')
     }
+
+    //#region extras
+    public async uptime({ params, request, response }: HttpContextContract) {
+        // data
+        const now = DateTime.now().toISODate()
+        const interval = 10
+        const dateFormat = 'yyyy-MM-dd'
+
+        // request
+        const slug = params.id // get slug in url
+        const start = request.input('start', now)
+        const end = request.input('end', now)
+
+        try {
+            await request.validate({
+                schema: schema.create({
+                    start: schema.date.optional({ format: dateFormat }),
+                    end: schema.date.optional({ format: dateFormat }),
+                }),
+            })
+        } catch (error) {
+            return response.badRequest(error.messages)
+        }
+
+        // sql
+        const device = await Device.findByOrFail('slug', slug) // find
+        const sql = `
+            SELECT
+                COUNT(*) cnt,
+                to_timestamp(floor((extract('epoch' from created_at) / (60*${interval}) )) * (60*${interval})) as interval
+            FROM device_alives
+            WHERE
+                date(created_at) >= date(:start)
+                AND date(created_at) <= date(:end)
+                AND device = :device
+            GROUP BY interval
+            ORDER BY interval
+        `
+        const result = await Database.rawQuery<{
+            rows: {
+                count: number
+                date: DateTime
+            }[]
+        }>(sql, {
+            start,
+            end,
+            device: device.device,
+        })
+
+        return response.json(result.rows)
+    }
+    //#endregion
 }

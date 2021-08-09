@@ -39,6 +39,7 @@ Route.get('applications/:id/status', 'ApplicationsController.status').as('applic
 
 // device models
 Route.resource('devices/models', 'DeviceModelsController').except(['show'])
+Route.get('devices/:id/uptime', 'DevicesController.uptime').as('devices.uptime')
 
 // devices
 Route.resource('devices', 'DevicesController')

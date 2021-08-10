@@ -10,7 +10,11 @@ import EditDeviceValidator from 'App/Validators/EditDeviceValidator'
 
 export default class DevicesController {
     public async index({ inertia }: HttpContextContract) {
-        const devices = await Device.query().preload('model')
+        const devices = await Device.query()
+            .preload('model')
+            .orderBy('connectionUpdatedAt', 'desc')
+            .orderBy('displayName')
+            .orderBy('name')
         return inertia.render('Devices/Index', { devices })
     }
 
@@ -131,15 +135,23 @@ export default class DevicesController {
         return response.redirect().toRoute('devices.index')
     }
 
-    public async drives({ params, inertia }: HttpContextContract) {
+    public async drives({ request, params, inertia }: HttpContextContract) {
         const slug = params.id
+        const dateStart = request.input('start', DateTime.now().toISODate())
+        const dateEnd = request.input('end', DateTime.now().toISODate())
 
         const device = await Device.findByOrFail('slug', slug)
         const drives = await DeviceDrive.query()
             .where('device', device.device)
+            .andWhereRaw(`date(created_at) >= ?`, [dateStart])
+            .andWhereRaw(`date(created_at) <= ?`, [dateEnd])
             .orderBy('created_at')
 
-        return inertia.render('Devices/Drives', { device, drives })
+        return inertia.render('Devices/Drives', {
+            device,
+            drives,
+            queries: { start: dateStart, end: dateEnd },
+        })
     }
     //#endregion
 }

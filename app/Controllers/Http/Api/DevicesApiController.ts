@@ -2,6 +2,7 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import Env from '@ioc:Adonis/Core/Env'
 import { DateTime } from 'luxon'
+import { cuid } from '@ioc:Adonis/Core/Helpers'
 
 import Device from 'App/Models/Device'
 import DeviceAlive from 'App/Models/DeviceAlive'
@@ -77,7 +78,10 @@ export default class DevicesApiController {
         }
 
         // database
-        await DeviceDrive.createMany(payload.drives.map((d) => ({ ...d, device: payload.device })))
+        const group = cuid()
+        await DeviceDrive.createMany(
+            payload.drives.map((d) => ({ ...d, device: payload.device, group }))
+        )
 
         // return
         return response.status(201)

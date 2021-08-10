@@ -9,6 +9,9 @@ export default class DeviceDrive extends BaseModel {
     @column()
     public device: string
 
+    @column()
+    public group: string
+
     @column.dateTime({ autoCreate: true })
     public createdAt: DateTime
 

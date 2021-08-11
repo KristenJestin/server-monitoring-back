@@ -21,31 +21,43 @@
 import Route from '@ioc:Adonis/Core/Route'
 import { STATUS } from 'App/Models/Device'
 
-Route.where('id', /^[a-z0-9_-]+$/)
+Route.where('id', /^[a-z0-9_-]+$/) // global where for id to be a slug
+
+//#region auth
+Route.group(() => {
+    Route.get('', 'AuthController.index').as('index')
+    Route.post('login', 'AuthController.login').as('login')
+    Route.post('logout', 'AuthController.logout').as('logout')
+})
+    .prefix('auth')
+    .as('auth')
+//#endregion
 
 //#region routes
-// home
-Route.any('', 'HomeController.index').as('home')
+Route.group(() => {
+    // home
+    Route.get('', 'HomeController.index').as('home')
 
-// drives
-Route.resource('drives', 'DrivesController')
+    // drives
+    Route.resource('drives', 'DrivesController')
 
-// applications
-Route.resource('applications', 'ApplicationsController')
-Route.get('applications/:id/image/:type', 'ApplicationsController.image')
-    .where('type', /^[a-z]+$/)
-    .as('applications.image')
-Route.get('applications/:id/status', 'ApplicationsController.status').as('applications.status')
+    // applications
+    Route.resource('applications', 'ApplicationsController')
+    Route.get('applications/:id/image/:type', 'ApplicationsController.image')
+        .where('type', /^[a-z]+$/)
+        .as('applications.image')
+    Route.get('applications/:id/status', 'ApplicationsController.status').as('applications.status')
 
-// device models
-Route.resource('devices/models', 'DeviceModelsController').except(['show'])
+    // device models
+    Route.resource('devices/models', 'DeviceModelsController').except(['show'])
 
-// devices
-Route.resource('devices', 'DevicesController').except(['create', 'store'])
-Route.get('devices/:id/uptime', 'DevicesController.uptime').as('devices.uptime')
-Route.patch('devices/:id/deactivate', 'DevicesController.deactivate').as('devices.deactivate')
-Route.get('devices/:id/drives', 'DevicesController.drives').as('devices.drives')
-//#endregion
+    // devices
+    Route.resource('devices', 'DevicesController').except(['create', 'store'])
+    Route.get('devices/:id/uptime', 'DevicesController.uptime').as('devices.uptime')
+    Route.patch('devices/:id/deactivate', 'DevicesController.deactivate').as('devices.deactivate')
+    Route.get('devices/:id/drives', 'DevicesController.drives').as('devices.drives')
+    //#endregion
+}).middleware('auth')
 
 //#region api
 Route.group(() =>

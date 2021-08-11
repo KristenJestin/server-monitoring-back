@@ -73,7 +73,7 @@ export default class ApplicationsController {
             type: 'success',
             message: `The application '${application.name}' has been updated.`,
         })
-        return response.redirect().status(303).toRoute('applications.index')
+        return response.redirect().toRoute('applications.index')
     }
 
     public async destroy({ session, params, response }: HttpContextContract) {

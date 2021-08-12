@@ -31,6 +31,7 @@ export default class Device extends BaseModel {
     @beforeCreate()
     public static async defineId(model: Device) {
         model.id = uuid()
+        model.apiKey = uuid()
     }
 
     @column()
@@ -73,4 +74,7 @@ export default class Device extends BaseModel {
 
     @column.dateTime()
     public deactivatedAt?: DateTime | null
+
+    @column()
+    public apiKey: string
 }

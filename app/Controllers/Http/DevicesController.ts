@@ -2,6 +2,7 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
 import { schema } from '@ioc:Adonis/Core/Validator'
 import { DateTime } from 'luxon'
+import { v4 as uuid } from 'uuid'
 
 import Device from 'App/Models/Device'
 import DeviceDrive from 'App/Models/DeviceDrive'
@@ -152,6 +153,18 @@ export default class DevicesController {
             drives,
             queries: { start: dateStart, end: dateEnd },
         })
+    }
+
+    public async regenerateApiKey({ params, response }: HttpContextContract) {
+        const slug = params.id // get slug in url
+        const device = await Device.findByOrFail('slug', slug) // find element with slug
+
+        // delete data
+        const key = uuid()
+        device.merge({ apiKey: key })
+        await device.save()
+
+        return response.json({ key })
     }
     //#endregion
 }

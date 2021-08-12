@@ -56,6 +56,9 @@ Route.group(() => {
     Route.get('devices/:id/uptime', 'DevicesController.uptime').as('devices.uptime')
     Route.patch('devices/:id/deactivate', 'DevicesController.deactivate').as('devices.deactivate')
     Route.get('devices/:id/drives', 'DevicesController.drives').as('devices.drives')
+    Route.patch('devices/:id/regenerate-api-key', 'DevicesController.regenerateApiKey').as(
+        'devices.regenerateApiKey'
+    )
     //#endregion
 }).middleware('auth')
 

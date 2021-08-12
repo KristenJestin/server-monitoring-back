@@ -7,6 +7,7 @@ import { cuid } from '@ioc:Adonis/Core/Helpers'
 import Device from 'App/Models/Device'
 import DeviceAlive from 'App/Models/DeviceAlive'
 import DeviceDrive from 'App/Models/DeviceDrive'
+import { checkApiKey } from 'App/Services/DeviceKey'
 
 export default class DevicesApiController {
     public async status({ params, request, response }: HttpContextContract) {
@@ -23,12 +24,14 @@ export default class DevicesApiController {
         const payload = await request.validate({ schema: newStatusSchema })
 
         // database
+        let device: Device | undefined
         if (Env.get('APP_AUTO_CREATE_DEVICE')) {
-            await Device.updateOrCreate(
+            device = await Device.updateOrCreate(
                 { device: payload.device },
                 { ...payload, status, connectionUpdatedAt: DateTime.local() }
             )
         }
+        await checkApiKey(device, payload.device, request)
 
         // return
         return response.status(201)
@@ -42,9 +45,11 @@ export default class DevicesApiController {
         const payload = await request.validate({ schema: newAliveSchema })
 
         // check if exist in database
+        let device: Device | undefined
         if (!Env.get('APP_AUTO_CREATE_DEVICE')) {
-            await Device.findByOrFail('device', payload.device)
+            device = await Device.findByOrFail('device', payload.device)
         }
+        await checkApiKey(device, payload.device, request)
 
         // database
         await DeviceAlive.create(payload)
@@ -73,9 +78,11 @@ export default class DevicesApiController {
         const payload = await request.validate({ schema: newDrivesSchema })
 
         // check if exist in database
+        let device: Device | undefined
         if (!Env.get('APP_AUTO_CREATE_DEVICE')) {
-            await Device.findByOrFail('device', payload.device)
+            device = await Device.findByOrFail('device', payload.device)
         }
+        await checkApiKey(device, payload.device, request)
 
         // database
         const group = cuid()

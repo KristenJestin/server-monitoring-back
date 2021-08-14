@@ -77,4 +77,7 @@ export default class Device extends BaseModel {
 
     @column()
     public apiKey: string
+
+    @column.dateTime()
+    public aliveUpdatedAt?: DateTime
 }

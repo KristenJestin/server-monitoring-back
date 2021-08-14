@@ -13,9 +13,12 @@ export default class DevicesController {
     public async index({ inertia }: HttpContextContract) {
         const devices = await Device.query()
             .preload('model')
+            .orderBy('deactivatedAt', 'desc')
+            .orderBy('aliveUpdatedAt', 'desc')
             .orderBy('connectionUpdatedAt', 'desc')
             .orderBy('displayName')
             .orderBy('name')
+
         return inertia.render('Devices/Index', { devices })
     }
 

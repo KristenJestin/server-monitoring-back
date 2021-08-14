@@ -7,7 +7,7 @@ import Device from 'App/Models/Device'
 
 // main
 const checkApiKey = async (
-    device: Device | undefined,
+    device: Device | null | undefined,
     deviceId: string,
     request: HttpContextContract['request']
 ): Promise<void> => {

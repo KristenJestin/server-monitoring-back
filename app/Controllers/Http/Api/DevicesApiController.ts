@@ -44,12 +44,19 @@ export default class DevicesApiController {
         })
         const payload = await request.validate({ schema: newAliveSchema })
 
-        // check if exist in database
-        let device: Device | undefined
+        let device: Device | null | undefined
         if (!Env.get('APP_AUTO_CREATE_DEVICE')) {
+            // check if exist in database
             device = await Device.findByOrFail('device', payload.device)
+        } else {
+            device = await Device.findBy('device', payload.device)
         }
         await checkApiKey(device, payload.device, request)
+
+        if (device) {
+            device.merge({ aliveUpdatedAt: DateTime.local() })
+            await device.save()
+        }
 
         // database
         await DeviceAlive.create(payload)

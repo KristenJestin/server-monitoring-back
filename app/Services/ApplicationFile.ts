@@ -11,8 +11,8 @@ const resizeImage = async (
 ): Promise<string | undefined> => {
     if (!file) return undefined
 
-    const originalPath = Application.tmpPath(...paths, 'original')
-    const path = Application.tmpPath(...paths)
+    const originalPath = Application.makePath(...paths, 'original')
+    const path = Application.makePath(...paths)
     const fileName = cuid()
     await file.move(originalPath, {
         name: `${fileName}.${file.extname}`,

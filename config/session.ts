@@ -100,7 +100,7 @@ const sessionConfig: SessionConfig = {
   |
   */
     file: {
-        location: Application.tmpPath('sessions'),
+        location: Application.makePath('sessions'),
     },
 
     /*

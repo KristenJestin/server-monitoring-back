@@ -19,15 +19,60 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
-Route.where('id', /^[a-z0-9_-]+$/)
+import { STATUS } from 'App/Models/Device'
 
-// routes
-Route.any('', 'HomeController.index').as('home')
+Route.where('id', /^[a-z0-9_-]+$/) // global where for id to be a slug
 
-Route.resource('drives', 'DrivesController')
+//#region auth
+Route.group(() => {
+    Route.get('', 'AuthController.index').as('index')
+    Route.post('login', 'AuthController.login').as('login')
+    Route.post('logout', 'AuthController.logout').as('logout')
+})
+    .prefix('auth')
+    .as('auth')
+//#endregion
 
-Route.resource('applications', 'ApplicationsController')
-Route.get('applications/:id/image/:type', 'ApplicationsController.image')
-    .where('type', /^[a-z]+$/)
-    .as('applications.image')
-Route.get('applications/:id/status', 'ApplicationsController.status').as('applications.status')
+//#region routes
+Route.group(() => {
+    // home
+    Route.get('', 'HomeController.index').as('home')
+
+    // drives
+    Route.resource('drives', 'DrivesController')
+
+    // applications
+    Route.resource('applications', 'ApplicationsController')
+    Route.get('applications/:id/image/:type', 'ApplicationsController.image')
+        .where('type', /^[a-z]+$/)
+        .as('applications.image')
+    Route.get('applications/:id/status', 'ApplicationsController.status').as('applications.status')
+
+    // device models
+    Route.resource('devices/models', 'DeviceModelsController').except(['show'])
+
+    // devices
+    Route.resource('devices', 'DevicesController').except(['create', 'store'])
+    Route.get('devices/:id/uptime', 'DevicesController.uptime').as('devices.uptime')
+    Route.patch('devices/:id/deactivate', 'DevicesController.deactivate').as('devices.deactivate')
+    Route.get('devices/:id/drives', 'DevicesController.drives').as('devices.drives')
+    Route.patch('devices/:id/regenerate-api-key', 'DevicesController.regenerateApiKey').as(
+        'devices.regenerateApiKey'
+    )
+    //#endregion
+}).middleware('auth')
+
+//#region api
+Route.group(() =>
+    Route.group(() => {
+        Route.post('alive', 'DevicesApiController.alive')
+        Route.post('status/:status', 'DevicesApiController.status').where(
+            'status',
+            new RegExp(`^(${Object.values(STATUS).join('|')})$`)
+        )
+        Route.post('drives', 'DevicesApiController.drives')
+    }).prefix('devices')
+)
+    .prefix('api')
+    .namespace('App/Controllers/Http/Api')
+//#endregion

@@ -31,7 +31,8 @@
         "@adonisjs/lucid-slugify",
         "@eidellev/inertia-adonisjs",
         "./providers/ViteAssetProvider",
-        "./providers/RouteProvider"
+        "./providers/RouteProvider",
+        "@adonisjs/auth"
     ],
     "metaFiles": [
         {

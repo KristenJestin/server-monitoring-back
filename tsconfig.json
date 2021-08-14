@@ -20,7 +20,8 @@
             "@adonisjs/shield",
             "@adonisjs/lucid",
             "@adonisjs/lucid-slugify",
-            "@eidellev/inertia-adonisjs"
+            "@eidellev/inertia-adonisjs",
+            "@adonisjs/auth"
         ]
     }
 }

@@ -139,7 +139,7 @@ const bodyParserConfig: BodyParserConfig = {
     |--------------------------------------------------------------------------
     |
     | When auto processing is on. We will use this method to compute the temporary
-    | file name. AdonisJs will compute a unique `tmpPath` for you automatically,
+    | file name. AdonisJs will compute a unique `makePath` for you automatically,
     | However, you can also define your own custom method.
     |
     */

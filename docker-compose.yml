@@ -1,45 +1,47 @@
-version: '3.5'
+version: '3'
 
 services:
-    postgres_ci:
-        container_name: postgres_ci_container
-        image: postgres:12
+    servermonitoring-app:
+        # Build dockerfile
+        build: .
+        # Restart container in case of crashes etc
+        restart: always
         env_file:
             - .env
         environment:
-            POSTGRES_USER: ${DB_USER:-postgres}
-            POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
-            PGDATA: /data/postgres
-        volumes:
-            - postgres_ci:/data/postgres
+            PORT: 3333
+            HOST: ${HOST:-0.0.0.0}
+            NODE_ENV: ${NODE_ENV:-production}
+            APP_KEY: ${APP_KEY}
+            SESSION_DRIVER: ${SESSION_DRIVER:-cookie}
+            CACHE_VIEWS: ${CACHE_VIEWS:-true}
+            DB_CONNECTION: ${DB_CONNECTION:-pg}
+            DB_HOST: ${DB_HOST}
+            DB_PORT: ${DB_PORT}
+            DB_USER: ${DB_USER}
+            DB_PASSWORD: ${DB_PASSWORD}
+            DB_NAME: ${DB_NAME}
+            APP_AUTO_CREATE_DEVICE: ${APP_AUTO_CREATE_DEVICE:-true}
+            APP_DEVICE_USE_KEY: ${APP_DEVICE_USE_KEY:-false}
         ports:
-            - '${DB_PORT:-5432}:5432'
+            - '${PORT:-3333}:3333'
         networks:
-            - postgres
-        restart: unless-stopped
+            - database
 
-    pgadmin_ci:
-        container_name: pgadmin_ci_container
-        image: dpage/pgadmin4:5
-        env_file:
-            - .env
-        environment:
-            PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@local.fr}
-            PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
-            PGADMIN_CONFIG_SERVER_MODE: 'False'
+        # Mount uploads to volume,
+        # so they wont get lost over deployments
+        # Change uploads path to wherever
+        # you store uploads in your app
+        # Also ensure NodeJS has write access to there
+        # (by default Node will have it)
         volumes:
-            - pgadmin_ci:/root/.pgadmin
-
-        ports:
-            - '${PGADMIN_PORT:-5050}:80'
-        networks:
-            - postgres
-        restart: unless-stopped
-
-networks:
-    postgres:
-        driver: bridge
+            - uploads:/home/node/app/uploads
 
 volumes:
-    postgres_ci:
-    pgadmin_ci:
+    uploads:
+        name: servermonitoring_uploads
+
+networks:
+    database:
+        external:
+            name: public_database_postgres

@@ -30,4 +30,7 @@ export default Env.rules({
     DB_USER: Env.schema.string(),
     DB_PASSWORD: Env.schema.string.optional(),
     DB_NAME: Env.schema.string(),
+
+    APP_AUTO_CREATE_DEVICE: Env.schema.boolean(),
+    APP_DEVICE_USE_KEY: Env.schema.boolean(),
 })

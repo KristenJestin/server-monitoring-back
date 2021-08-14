@@ -5,8 +5,8 @@ import { exec } from 'shelljs'
 import ApplicationModel from 'App/Models/Application'
 import CreateApplicationValidator from 'App/Validators/CreateApplicationValidator'
 import EditApplicationValidator from 'App/Validators/EditApplicationValidator'
-import { resizeImage } from '../../Services/ApplicationFile'
-import Service from '../../Models/extra/Service'
+import { resizeImage } from 'App/Services/ApplicationFile'
+import Service from 'App/Models/extra/Service'
 
 export const IMAGE_FILE_PATHS = ['uploads', 'applications']
 
@@ -73,7 +73,7 @@ export default class ApplicationsController {
             type: 'success',
             message: `The application '${application.name}' has been updated.`,
         })
-        return response.redirect().status(303).toRoute('applications.index')
+        return response.redirect().toRoute('applications.index')
     }
 
     public async destroy({ session, params, response }: HttpContextContract) {
@@ -115,7 +115,7 @@ export default class ApplicationsController {
         }
 
         return response.attachment(
-            Application.tmpPath(...IMAGE_FILE_PATHS, application.image + name),
+            Application.makePath(...IMAGE_FILE_PATHS, application.image + name),
             application.slug + ext
         )
     }

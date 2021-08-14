@@ -8,7 +8,7 @@ import EditApplicationValidator from 'App/Validators/EditApplicationValidator'
 import { resizeImage } from 'App/Services/ApplicationFile'
 import Service from 'App/Models/extra/Service'
 
-export const IMAGE_FILE_PATHS = ['applications']
+export const IMAGE_FILE_PATHS = ['uploads', 'applications']
 
 export default class ApplicationsController {
     public async index({ inertia }: HttpContextContract) {

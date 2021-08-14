@@ -8,7 +8,6 @@ import Device from 'App/Models/Device'
 import DeviceDrive from 'App/Models/DeviceDrive'
 import DeviceModel from 'App/Models/DeviceModel'
 import EditDeviceValidator from 'App/Validators/EditDeviceValidator'
-import Application from '@ioc:Adonis/Core/Application'
 
 export default class DevicesController {
     public async index({ inertia }: HttpContextContract) {

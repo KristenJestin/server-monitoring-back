@@ -1,13 +1,31 @@
 version: '3'
 
 services:
-    api:
+    servermonitoring-app:
         # Build dockerfile
         build: .
         # Restart container in case of crashes etc
         restart: always
         networks:
             - database
+        env_file:
+            - .env
+        environment:
+            PORT: ${PORT:-3333}
+            HOST: ${HOST:-0.0.0.0}
+            NODE_ENV: ${NODE_ENV:-production}
+            APP_KEY: ${APP_KEY}
+            SESSION_DRIVER: ${SESSION_DRIVER:-cookie}
+            CACHE_VIEWS: ${CACHE_VIEWS:-true}
+            DB_CONNECTION: ${DB_CONNECTION:-pg}
+            DB_HOST: ${DB_HOST}
+            DB_PORT: ${DB_PORT}
+            DB_USER: ${DB_USER}
+            DB_PASSWORD: ${DB_PASSWORD}
+            DB_NAME: ${DB_NAME}
+            APP_AUTO_CREATE_DEVICE: ${APP_AUTO_CREATE_DEVICE:-true}
+            APP_DEVICE_USE_KEY: ${APP_DEVICE_USE_KEY:-false}
+
         # Mount uploads to volume,
         # so they wont get lost over deployments
         # Change uploads path to wherever
